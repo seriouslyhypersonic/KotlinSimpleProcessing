@@ -1,12 +1,17 @@
 package com.seriouslyhypersonic.processor
 
+import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
-class CaseDetectionProcessorProvider : SymbolProcessorProvider {
-    override fun create(environment: SymbolProcessorEnvironment) = CaseDetectionProcessor(
-        generator = environment.codeGenerator,
-        logger = environment.logger,
-        options = environment.options
-    )
+/**
+ * [SymbolProcessorProvider] that provides a [CaseDetectionProcessor].
+ */
+public class CaseDetectionProcessorProvider : SymbolProcessorProvider {
+    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
+        CaseDetectionProcessor(
+            generator = environment.codeGenerator,
+            logger = environment.logger,
+            options = environment.options
+        )
 }

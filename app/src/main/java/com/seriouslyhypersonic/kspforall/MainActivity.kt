@@ -61,9 +61,8 @@ enum class TextAlignment {
 sealed class Device(val brand: String) {
     class Laptop(brand: String) : Device(brand)
     class Smartphone(brand: String) : Device(brand)
+    class Tablet(brand: String) : Device(brand)
 }
-
-class Tablet(brand: String) : Device(brand)
 
 @CaseDetection
 sealed interface Vehicle {

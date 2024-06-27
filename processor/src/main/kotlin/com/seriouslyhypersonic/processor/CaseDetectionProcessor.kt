@@ -10,7 +10,10 @@ import com.google.devtools.ksp.validate
 import com.seriouslyhypersonic.annotations.CaseDetection
 import com.seriouslyhypersonic.ktx.classesAnnotatedWith
 
-class CaseDetectionProcessor(
+/**
+ * [SymbolProcessor] for [CaseDetection] annotations.
+ */
+internal class CaseDetectionProcessor(
     private val generator: CodeGenerator,
     @Suppress("unused") private val logger: KSPLogger,
     @Suppress("unused") private val options: Map<String, String>

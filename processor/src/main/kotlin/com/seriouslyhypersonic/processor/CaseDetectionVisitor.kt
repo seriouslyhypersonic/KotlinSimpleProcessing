@@ -6,6 +6,7 @@ import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Modifier
+import com.seriouslyhypersonic.annotations.CaseDetection
 import com.seriouslyhypersonic.ktx.snakeToPascalCase
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -14,14 +15,12 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.writeTo
 
-abstract class CaseDetectionVisitor(protected val generator: CodeGenerator) : KSVisitorVoid() {
-    protected fun fileSpecFor(declaration: KSClassDeclaration) = FileSpec.builder(
-        packageName = declaration.packageName.asString(),
-        fileName = declaration.simpleName.asString() + "CaseDetection"
-    )
-}
-
-class EnumCaseDetectionVisitor(generator: CodeGenerator) : CaseDetectionVisitor(generator) {
+/**
+ * Visitor for enum class declarations annotated with [CaseDetection].
+ */
+internal class EnumCaseDetectionVisitor(
+    private val generator: CodeGenerator
+) : KSVisitorVoid() {
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         val entries = classDeclaration.declarations
             .filterIsInstance<KSClassDeclaration>()
@@ -60,7 +59,10 @@ class EnumCaseDetectionVisitor(generator: CodeGenerator) : CaseDetectionVisitor(
         .toList()
 }
 
-class SealedClassCaseDetection(generator: CodeGenerator) : CaseDetectionVisitor(generator) {
+/**
+ * Visitor for sealed class or sealed interfaces annotated with [CaseDetection].
+ */
+internal class SealedClassCaseDetection(private val generator: CodeGenerator) : KSVisitorVoid() {
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         require(Modifier.SEALED in classDeclaration.modifiers) {
             "CaseDetection is only applicable to sealed classes or sealed interfaces"
@@ -100,3 +102,8 @@ class SealedClassCaseDetection(generator: CodeGenerator) : CaseDetectionVisitor(
         }
         .toList()
 }
+
+private fun fileSpecFor(declaration: KSClassDeclaration) = FileSpec.builder(
+    packageName = declaration.packageName.asString(),
+    fileName = declaration.simpleName.asString() + "CaseDetection"
+)

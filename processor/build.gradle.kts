@@ -14,6 +14,12 @@ java {
 tasks.withType<KotlinCompile>().all {
     kotlinOptions {
         jvmTarget = "11"
+
+        freeCompilerArgs = listOfNotNull(
+            "-opt-in=kotlin.RequiresOptIn",
+            "-Xcontext-receivers",
+            "-Xexplicit-api=strict".takeUnless { "Test" in name }
+        )
     }
 }
 
