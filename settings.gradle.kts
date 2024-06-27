@@ -20,4 +20,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "KspForAll"
-include(":app")
+include(":app", ":annotations", ":processor")
