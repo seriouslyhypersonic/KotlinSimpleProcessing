@@ -68,6 +68,10 @@ internal class SealedClassCaseDetection(private val generator: CodeGenerator) : 
             "CaseDetection is only applicable to sealed classes or sealed interfaces"
         }
 
+        require(classDeclaration.typeParameters.isEmpty()) {
+            "CaseDetection is only applicable to non-generic sealed classes or sealed interfaces"
+        }
+
         val entries = classDeclaration.getSealedSubclasses()
 
         fileSpecFor(classDeclaration)
