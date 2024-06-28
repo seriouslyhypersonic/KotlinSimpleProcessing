@@ -6,6 +6,7 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.validate
 import com.seriouslyhypersonic.annotations.CaseDetection
 import com.seriouslyhypersonic.ktx.classesAnnotatedWith
@@ -20,6 +21,7 @@ internal class CaseDetectionProcessor(
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.classesAnnotatedWith(CaseDetection::class)
+            .filter { it.validate() } // Filters out symbols deferred to other rounds
 
         if (!symbols.iterator().hasNext()) return emptyList()
 
