@@ -69,7 +69,7 @@ sealed interface Vehicle {
     val powertrain: String
 
     class Bike(override val powertrain: String) : Vehicle
-    object Bycicle : Vehicle {
+    data object Bycicle : Vehicle {
         override val powertrain = "Leg-power"
     }
 }
