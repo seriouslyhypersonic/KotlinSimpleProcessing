@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -50,7 +52,17 @@ android {
     }
 }
 
+tasks.withType<KotlinCompile>().all {
+    kotlinOptions {
+        freeCompilerArgs += listOf(
+            "-opt-in=kotlin.RequiresOptIn",
+            "-Xcontext-receivers"
+        )
+    }
+}
+
 dependencies {
+    implementation(project(":library"))
     implementation(project(":annotations"))
     ksp(project(":processor"))
 
@@ -63,6 +75,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.material.icons)
+
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.annotations)
+    implementation(libs.koin.androidx.compose)
+    ksp(libs.koin.ksp.compiler)
 
     testImplementation(libs.junit)
 

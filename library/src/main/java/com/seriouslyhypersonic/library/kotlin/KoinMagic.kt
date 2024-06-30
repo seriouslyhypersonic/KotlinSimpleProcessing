@@ -21,10 +21,10 @@ import org.koin.core.scope.Scope
 /**
  * Magically injects a [ViewModel] instance from Koin. Unlike [koinViewModel] this injector is
  * magical because injected instance may be replaced for other instances appropriate for previewing.
- * To provide replacements define one or more [PreviewModule]s and use [PreviewWith] in previews.
+ * To provide replacements define one or more [PreviewModule]s and use [KoinPreview] in previews.
  */
 @Composable
-public inline fun <reified VM : ViewModel> accioViewModel(
+public inline fun <reified VM : ViewModel> injectViewModel(
     qualifier: Qualifier? = null,
     viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
@@ -57,7 +57,7 @@ internal val LocalPreviewContext: ProvidableCompositionLocal<PreviewContext> =
  * @param content The [Composable] content where magically injected instances will be replaced.
  */
 @Composable
-public fun MagicPreview(vararg modules: PreviewModule, content: @Composable () -> Unit) {
+public fun KoinPreview(vararg modules: PreviewModule, content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalPreviewContext provides PreviewContext(*modules),
         content = content
