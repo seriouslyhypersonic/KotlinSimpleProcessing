@@ -6,7 +6,7 @@ import kotlin.reflect.KClass
 
 @PublishedApi
 internal class PreviewContext(private val specs: Map<AnyKClass, AnyPreviewSpec>) {
-    constructor(vararg modules: PreviewModule) : this(specs = modules.map { it.specs }.flatten())
+    constructor(modules: List<PreviewModule>) : this(specs = modules.map { it.specs }.flatten())
 
     fun <I : Any> resolvePreviewFor(target: KClass<I>, parameters: ParametersDefinition?): I {
         val preview = requireNotNull(specs[target]) {

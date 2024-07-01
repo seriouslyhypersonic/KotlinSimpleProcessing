@@ -59,7 +59,7 @@ internal val LocalPreviewContext: ProvidableCompositionLocal<PreviewContext> =
 @Composable
 public fun KoinPreview(vararg modules: PreviewModule, content: @Composable () -> Unit) {
     CompositionLocalProvider(
-        LocalPreviewContext provides PreviewContext(*modules),
+        LocalPreviewContext provides PreviewContext(modules.toList()),
         content = content
     )
 }
