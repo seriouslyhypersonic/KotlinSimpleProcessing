@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.kspforall.weather.domain
+package com.seriouslyhypersonic.kspforall.demo.weather.domain
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -15,8 +15,7 @@ class MockWeatherService : WeatherService {
         val Forecasts = listOf(
             WeatherForecast(
                 location = "Lisbon",
-                temperature = WeatherForecast
-                    .Temperature(current = 19, perceived = 20, max = 25, min = 17),
+                temperature = WeatherForecast.Temperature(current = 19, perceived = 20, max = 25, min = 17),
                 description = WeatherForecast.Description.ClearSkies
             )
         )

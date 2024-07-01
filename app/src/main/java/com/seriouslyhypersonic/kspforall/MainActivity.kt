@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.kspforall.demo
+package com.seriouslyhypersonic.kspforall
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.seriouslyhypersonic.kspforall.ui.theme.KspForAllTheme
-import com.seriouslyhypersonic.kspforall.weather.WeatherOverview
+import com.seriouslyhypersonic.kspforall.demo.weather.WeatherOverview
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -34,6 +34,9 @@ private fun `Case Detection Demo`() {
     val up = Direction.Up
     require(up.isUp)
 
+    val centerAligned = TextAlignment.CENTER_ALIGNED
+    require(centerAligned.isCenterAligned)
+
     val macBookPro = Device.Laptop(brand = "Apple")
     require(macBookPro.isLaptop && macBookPro.brand == "Apple")
 

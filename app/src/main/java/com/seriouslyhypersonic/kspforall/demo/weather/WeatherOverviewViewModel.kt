@@ -1,15 +1,17 @@
-package com.seriouslyhypersonic.kspforall.weather
+package com.seriouslyhypersonic.kspforall.demo.weather
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.seriouslyhypersonic.kspforall.weather.WeatherSimulation.Companion.simulationFor
-import com.seriouslyhypersonic.kspforall.weather.domain.WeatherService
+import com.seriouslyhypersonic.annotations.Previewable
+import com.seriouslyhypersonic.kspforall.demo.weather.WeatherSimulation.Companion.simulationFor
+import com.seriouslyhypersonic.kspforall.demo.weather.domain.WeatherService
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
+@Previewable(generateModel = true)
 @KoinViewModel(binds = [SomeWeatherOverviewViewModel::class])
 class WeatherOverviewViewModel(
     private val service: WeatherService
@@ -49,39 +51,14 @@ class WeatherOverviewViewModel(
     }
 }
 
-abstract class SomeWeatherOverviewViewModel : ViewModel() {
-    abstract val location: String
-    abstract val currentTemperature: String
-    abstract val description: String
-    abstract val perceivedTemperature: String
-    abstract val maxTemperature: String
-    abstract val minTemperature: String
-    abstract val simulation: WeatherSimulation
+abstract class SomeWeatherOverviewViewModel : WeatherOverviewViewModelContract, ViewModel()
 
-    abstract fun update()
-}
-
-data class WeatherOverviewPreviewViewModel(
-    override val location: String,
-    override val currentTemperature: String,
-    override val description: String,
-    override val perceivedTemperature: String,
-    override val maxTemperature: String,
-    override val minTemperature: String,
-    override val simulation: WeatherSimulation
-) : SomeWeatherOverviewViewModel() {
-    override fun update() { /* no-op */
-    }
-
-    companion object {
-        val ClearSkies = WeatherOverviewPreviewViewModel(
-            location = "Cascais",
-            currentTemperature = "23",
-            description = "Sunny",
-            perceivedTemperature = "Currently feels like 25º",
-            maxTemperature = "31",
-            minTemperature = "19",
-            simulation = WeatherSimulation.ClearSkies
-        )
-    }
-}
+val ClearSkiesWeatherOverviewViewModel = WeatherOverviewPreviewViewModel(
+    location = "Cascais",
+    currentTemperature = "23",
+    description = "Sunny",
+    perceivedTemperature = "Currently feels like 25º",
+    maxTemperature = "31",
+    minTemperature = "19",
+    simulation = WeatherSimulation.ClearSkies
+)

@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.kspforall.weather
+package com.seriouslyhypersonic.kspforall.demo.weather
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

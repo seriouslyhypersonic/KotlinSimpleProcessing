@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.processor
+package com.seriouslyhypersonic.processor.casedetection
 
 import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.processing.CodeGenerator
@@ -26,13 +26,13 @@ internal class EnumCaseDetectionVisitor(
             .filterIsInstance<KSClassDeclaration>()
             .filter { it.classKind == ClassKind.ENUM_ENTRY }
 
-        fileSpecFor(classDeclaration)
-            .addProperties(propertiesFor(entries, classDeclaration))
+        fileSpecBuilderFor(classDeclaration)
+            .addProperties(propertySpecsFor(entries, classDeclaration))
             .build()
             .writeTo(generator, aggregating = true)
     }
 
-    private fun propertiesFor(
+    private fun propertySpecsFor(
         entries: Sequence<KSClassDeclaration>,
         enumClass: KSClassDeclaration
     ) = entries
@@ -62,7 +62,9 @@ internal class EnumCaseDetectionVisitor(
 /**
  * Visitor for sealed class or sealed interfaces annotated with [CaseDetection].
  */
-internal class SealedClassCaseDetection(private val generator: CodeGenerator) : KSVisitorVoid() {
+internal class SealedClassCaseDetectionVisitor(
+    private val generator: CodeGenerator
+) : KSVisitorVoid() {
     override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
         require(Modifier.SEALED in classDeclaration.modifiers) {
             "CaseDetection is only applicable to sealed classes or sealed interfaces"
@@ -74,13 +76,13 @@ internal class SealedClassCaseDetection(private val generator: CodeGenerator) : 
 
         val entries = classDeclaration.getSealedSubclasses()
 
-        fileSpecFor(classDeclaration)
-            .addProperties(propertiesFor(entries, sealedClass = classDeclaration))
+        fileSpecBuilderFor(classDeclaration)
+            .addProperties(propertySpecsFor(entries, sealedClass = classDeclaration))
             .build()
             .writeTo(generator, aggregating = true)
     }
 
-    private fun propertiesFor(
+    private fun propertySpecsFor(
         entries: Sequence<KSClassDeclaration>,
         sealedClass: KSClassDeclaration
     ) = entries
@@ -107,7 +109,7 @@ internal class SealedClassCaseDetection(private val generator: CodeGenerator) : 
         .toList()
 }
 
-private fun fileSpecFor(declaration: KSClassDeclaration) = FileSpec.builder(
+private fun fileSpecBuilderFor(declaration: KSClassDeclaration) = FileSpec.builder(
     packageName = declaration.packageName.asString(),
     fileName = declaration.simpleName.asString() + "CaseDetection"
 )

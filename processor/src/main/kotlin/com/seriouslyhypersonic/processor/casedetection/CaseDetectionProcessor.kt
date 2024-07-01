@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.processor
+package com.seriouslyhypersonic.processor.casedetection
 
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
@@ -6,7 +6,6 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.validate
 import com.seriouslyhypersonic.annotations.CaseDetection
 import com.seriouslyhypersonic.ktx.classesAnnotatedWith
@@ -20,7 +19,8 @@ internal class CaseDetectionProcessor(
     @Suppress("unused") private val options: Map<String, String>
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver.classesAnnotatedWith(CaseDetection::class)
+        val symbols = resolver
+            .classesAnnotatedWith(CaseDetection::class)
             .filter { it.validate() } // Filters out symbols deferred to other rounds
 
         if (!symbols.iterator().hasNext()) return emptyList()
@@ -31,7 +31,7 @@ internal class CaseDetectionProcessor(
                     declaration.accept(EnumCaseDetectionVisitor(generator), Unit)
 
                 ClassKind.INTERFACE, ClassKind.CLASS ->
-                    declaration.accept(SealedClassCaseDetection(generator), Unit)
+                    declaration.accept(SealedClassCaseDetectionVisitor(generator), Unit)
 
                 else -> error("CaseDetection is only applicable to enums, classes or interfaces")
             }

@@ -1,1 +1,2 @@
-com.seriouslyhypersonic.processor.CaseDetectionProcessorProvider
+com.seriouslyhypersonic.processor.casedetection.CaseDetectionProcessorProvider
+com.seriouslyhypersonic.processor.previewable.PreviewableProcessorProvider

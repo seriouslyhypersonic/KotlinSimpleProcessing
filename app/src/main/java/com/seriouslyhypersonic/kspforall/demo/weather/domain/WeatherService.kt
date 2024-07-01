@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.kspforall.weather.domain
+package com.seriouslyhypersonic.kspforall.demo.weather.domain
 
 interface WeatherService {
     suspend fun fetchForecast(): WeatherForecast
