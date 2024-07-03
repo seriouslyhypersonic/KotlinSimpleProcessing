@@ -27,12 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.seriouslyhypersonic.kspforall.ui.preview.KspForAllPreview
 import com.seriouslyhypersonic.kspforall.ui.theme.AppIcons
-import com.seriouslyhypersonic.library.kotlin.injectViewModel
 
 @Composable
 fun WeatherOverview(
     modifier: Modifier = Modifier,
-    viewModel: SomeWeatherOverviewViewModel = injectViewModel()
+    viewModel: SomeWeatherOverviewViewModel = injectWeatherOverviewViewModel()
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.update()

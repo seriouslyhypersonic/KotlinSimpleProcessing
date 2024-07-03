@@ -11,11 +11,11 @@ import com.seriouslyhypersonic.kspforall.demo.weather.domain.WeatherService
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
-@Previewable(generateModel = true)
-@KoinViewModel(binds = [SomeWeatherOverviewViewModel::class])
+@Previewable
+@KoinViewModel
 class WeatherOverviewViewModel(
     private val service: WeatherService
-) : SomeWeatherOverviewViewModel() {
+) : SomeWeatherOverviewViewModel, ViewModel() {
     override var location by mutableStateOf("--")
         private set
 
@@ -50,8 +50,6 @@ class WeatherOverviewViewModel(
         }
     }
 }
-
-abstract class SomeWeatherOverviewViewModel : WeatherOverviewViewModelContract, ViewModel()
 
 val ClearSkiesWeatherOverviewViewModel = WeatherOverviewPreviewViewModel(
     location = "Cascais",

@@ -16,13 +16,17 @@ import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.validate
 import com.seriouslyhypersonic.annotations.Previewable
 import com.seriouslyhypersonic.ktx.classesAnnotatedWith
+import com.seriouslyhypersonic.processor.previewable.InjectFunction.addInjectionFunctionImports
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toKModifier
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
@@ -35,34 +39,39 @@ internal class PreviewableProcessor(
     @Suppress("unused") private val logger: KSPLogger,
     @Suppress("unused") private val options: Map<String, String>
 ) : SymbolProcessor {
+    // We need this because KSP will run the processor a second time once the symbol is valid (i.e.
+    // once the interace has been generated).
+    private val visited = mutableSetOf<String>()
+
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver
             .classesAnnotatedWith(Previewable::class)
-            .filter { it.validate() } // Filters out symbols deferred to other rounds
+            .filterNot { it.qualifiedName?.asString() in visited }
+        // We skip the validation as the Previewable ViewModels will always be deffered because the
+        // interface has not yet been generated and we need to process the class anyways.
+//            .filter { it.validate() } // Filters out symbols deferred to other rounds
 
         if (!symbols.iterator().hasNext()) return emptyList()
 
-        symbols.forEach { declaration ->
-            requireViewModel(declaration)
-            declaration.accept(visitor = PreviewableVisitor(generator, logger), data = Unit)
-        }
+        symbols
+            .forEach { declaration ->
+                requireContract(declaration)
+                declaration.accept(visitor = PreviewableVisitor(generator, logger), data = Unit)
+            }
+
+        visited.addAll(symbols.map { it.qualifiedName?.asString().orEmpty() })
 
         val unprocessedSymbols = symbols.filterNot { it.validate() }.toList()
         return unprocessedSymbols
     }
 
-    private fun requireViewModel(declaration: KSClassDeclaration) {
+    private fun requireContract(declaration: KSClassDeclaration) {
         val viewModelName = declaration.simpleName.asString()
         val extendsSomeViewModel = declaration.superTypes.any { supertype ->
-            val someViewModelDeclaration = supertype.resolve().declaration.simpleName.asString()
+            val someViewModelDeclaration = supertype.element.toString()
             someViewModelDeclaration == "Some$viewModelName"
         }
-        check(extendsSomeViewModel) {
-            buildString {
-                appendLine("$viewModelName must extend Some$viewModelName. Please declare:")
-                append("abstract class Some$viewModelName : ${viewModelName}Contract, ViewModel()")
-            }
-        }
+        check(extendsSomeViewModel) { "$viewModelName must extend Some$viewModelName." }
     }
 }
 
@@ -85,13 +94,19 @@ internal class PreviewableVisitor(
             .filterNot { it.simpleName.asString() in IgnoreMethodNames }
 
         fileSpecBuilderFor(classDeclaration)
+            .addInjectionFunctionImports()
             .addType(
                 TypeSpec
-                    .interfaceBuilder(name = "${classDeclaration.simpleName.asString()}Contract")
+                    .interfaceBuilder(InjectFunction.Type.SomeViewModel(classDeclaration))
+                    .addKdoc(
+                        "The view model contract associated with [%T].",
+                        classDeclaration.toClassName()
+                    )
                     .addProperties(contractPropertySpecsFor(properties))
                     .addFunctions(contractMethodSpecsFor(methods))
                     .build()
             )
+            .addFunction(InjectFunction.create(classDeclaration))
             .apply {
                 if (generateModel) {
                     addType(
@@ -101,13 +116,12 @@ internal class PreviewableVisitor(
                                     .asString()
                                     .replace("ViewModel", "PreviewViewModel")
                             )
-                            .addModifiers(KModifier.DATA)
-                            .superclass(
-                                ClassName(
-                                    packageName = classDeclaration.packageName.asString(),
-                                    "Some${classDeclaration.simpleName.asString()}"
-                                )
+                            .addKdoc(
+                                "The preview data class synthesized for previewing [%T].",
+                                classDeclaration.toClassName()
                             )
+                            .addModifiers(KModifier.DATA)
+                            .addSuperinterface(InjectFunction.Type.SomeViewModel(classDeclaration))
                             .primaryConstructor(
                                 FunSpec
                                     .constructorBuilder()
@@ -116,7 +130,6 @@ internal class PreviewableVisitor(
                             )
                             .addProperties(modelPropertySpecsFor(properties))
                             .addFunctions(modelMethodSpecsFor(methods))
-                            .addType(TypeSpec.companionObjectBuilder().build())
                             .build()
                     )
                 }
@@ -198,5 +211,130 @@ internal class PreviewableVisitor(
     private companion object {
         val IgnoreMethodNames =
             listOf("addCloseable", "equals", "getCloseable", "hashCode", "toString")
+    }
+}
+
+private object InjectFunction {
+    fun create(classDeclaration: KSClassDeclaration) = FunSpec
+        .builder("inject${classDeclaration.simpleName.asString()}")
+        .addKdoc(
+            """
+            Injects [%T] or the preview associated with it if the system is currently under preview 
+        """.trimIndent(),
+            classDeclaration.toClassName()
+        )
+        .addAnnotation(Annotation.Composable)
+        .addParameter(Parameter.Qualifier)
+        .addParameter(Parameter.ViewModelOwner)
+        .addParameter(Parameter.Key)
+        .addParameter(Parameter.Extras)
+        .addParameter(Parameter.Scope)
+        .addParameter(Parameter.Parameters)
+        .addCode(Implementation.create(classDeclaration))
+        .returns(Type.SomeViewModel(classDeclaration))
+        .build()
+
+    fun FileSpec.Builder.addInjectionFunctionImports() = this
+        .addImport(Type.LocalVmStoreOwner.packageName, Type.LocalVmStoreOwner.simpleName)
+        .addImport(Function.DefaultExtras.packageName, Function.DefaultExtras.simpleName)
+        .addImport(Type.LocalKoinScope.packageName, Type.LocalKoinScope.simpleName)
+        .addImport(Function.InjectViewModel.packageName, Function.InjectViewModel.simpleName)
+
+    object Parameter {
+        val Qualifier = ParameterSpec
+            .builder(
+                name = "qualifier",
+                type = ClassName(packageName = "org.koin.core.qualifier", "Qualifier")
+                    .copy(nullable = true),
+            )
+            .defaultValue("null")
+            .build()
+
+        val ViewModelOwner = ParameterSpec
+            .builder(
+                name = "viewModelStoreOwner",
+                type = ClassName(packageName = "androidx.lifecycle", "ViewModelStoreOwner")
+            )
+            .defaultValue(
+                """
+                checkNotNull(LocalViewModelStoreOwner.current) {
+                    "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+                }
+            """.trimIndent()
+            )
+            .build()
+
+        val Key = ParameterSpec
+            .builder(name = "key", type = String::class.asClassName().copy(nullable = true))
+            .defaultValue("null")
+            .build()
+
+        val Extras = ParameterSpec
+            .builder(
+                name = "extras",
+                type = ClassName(packageName = "androidx.lifecycle.viewmodel", "CreationExtras")
+            )
+            .defaultValue("defaultExtras(viewModelStoreOwner)")
+            .build()
+
+        val Scope = ParameterSpec
+            .builder(name = "scope", type = ClassName(packageName = "org.koin.core.scope", "Scope"))
+            .defaultValue("LocalKoinScope.current")
+            .build()
+
+        val Parameters = ParameterSpec
+            .builder(
+                name = "parameters",
+                type = ClassName(packageName = "org.koin.core.parameter", "ParametersDefinition")
+                    .copy(nullable = true)
+            )
+            .defaultValue("null")
+            .build()
+    }
+
+    object Type {
+        val LocalVmStoreOwner = ClassName(
+            packageName = "androidx.lifecycle.viewmodel.compose",
+            "LocalViewModelStoreOwner"
+        )
+
+        val LocalKoinScope = ClassName(packageName = "org.koin.compose", "LocalKoinScope")
+
+        @Suppress("FunctionName")
+        fun SomeViewModel(classDeclaration: KSClassDeclaration) = ClassName(
+            packageName = classDeclaration.packageName.asString(),
+            "Some${classDeclaration.simpleName.asString()}"
+        )
+    }
+
+    object Function {
+        val DefaultExtras = ClassName(packageName = "org.koin.androidx.compose", "defaultExtras")
+        val InjectViewModel = ClassName(
+            packageName = "com.seriouslyhypersonic.library.kotlin",
+            "injectViewModel"
+        )
+    }
+
+    object Annotation {
+        val Composable = ClassName(packageName = "androidx.compose.runtime", "Composable")
+    }
+
+    object Implementation {
+        fun create(classDeclaration: KSClassDeclaration) = CodeBlock
+            .builder()
+            .add(
+                """
+                return injectViewModel<%T, Some${classDeclaration.simpleName.asString()}>(
+                    qualifier,
+                    viewModelStoreOwner,
+                    key,
+                    extras,
+                    scope,
+                    parameters
+                )
+            """.trimIndent(),
+                classDeclaration.toClassName()
+            )
+            .build()
     }
 }

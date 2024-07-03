@@ -24,26 +24,23 @@ import org.koin.core.scope.Scope
  * To provide replacements define one or more [PreviewModule]s and use [KoinPreview] in previews.
  */
 @Composable
-public inline fun <reified VM : ViewModel> injectViewModel(
+public inline fun <reified VM : ViewModel, reified I : Any> injectViewModel(
     qualifier: Qualifier? = null,
     viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     },
     key: String? = null,
     extras: CreationExtras = defaultExtras(viewModelStoreOwner),
-    scope: Scope? = null,
+    scope: Scope = LocalKoinScope.current,
     noinline parameters: ParametersDefinition? = null,
-): VM = if (LocalInspectionMode.current) {
-    LocalPreviewContext.current.resolvePreviewFor(target = VM::class, parameters)
+): I = if (LocalInspectionMode.current) {
+    LocalPreviewContext.current.resolvePreviewFor(target = I::class, parameters)
 } else {
-    koinViewModel(
-        qualifier,
-        viewModelStoreOwner,
-        key,
-        extras,
-        scope = scope ?: LocalKoinScope.current,
-        parameters
-    )
+    val viewModel =
+        koinViewModel<VM>(qualifier, viewModelStoreOwner, key, extras, scope, parameters)
+    requireNotNull(viewModel as? I) {
+        "Cannot cast ${VM::class.simpleName} to ${I::class.simpleName}"
+    }
 }
 
 @PublishedApi
