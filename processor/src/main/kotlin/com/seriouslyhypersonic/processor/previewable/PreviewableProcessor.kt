@@ -177,6 +177,19 @@ internal class PreviewableVisitor(
 
     private fun methodSpecBuilderFor(method: KSFunctionDeclaration) = FunSpec
         .builder(name = method.simpleName.asString())
+        .addParameters(
+            method.parameters.map {  parameter ->
+                ParameterSpec.builder(
+                    name = parameter.name!!.asString(),
+                    type = parameter.type.toTypeName(),
+                    modifiers = listOfNotNull(
+                        KModifier.CROSSINLINE.takeIf { parameter.isCrossInline },
+                        KModifier.NOINLINE.takeIf { parameter.isNoInline },
+                        KModifier.VARARG.takeIf { parameter.isVararg }
+                    )
+                ).build()
+            }
+        )
         .apply {
             method.returnType?.toTypeName()?.let { returns(it) }
 
