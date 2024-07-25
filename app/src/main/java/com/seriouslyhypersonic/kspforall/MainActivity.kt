@@ -8,13 +8,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.seriouslyhypersonic.kspforall.ui.theme.KspForAllTheme
 import com.seriouslyhypersonic.kspforall.demo.weather.WeatherOverview
+import com.seriouslyhypersonic.kspforall.demo.weather.data.location.LocationProviderUpdater
+import com.seriouslyhypersonic.kspforall.ui.theme.KspForAllTheme
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+    private val locationUpdater: LocationProviderUpdater by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        locationUpdater.update()
         enableEdgeToEdge()
+
         setContent {
             KspForAllTheme {
                 WeatherOverview(modifier = Modifier)
