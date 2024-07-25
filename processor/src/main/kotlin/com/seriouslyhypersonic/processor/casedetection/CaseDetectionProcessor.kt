@@ -41,3 +41,4 @@ internal class CaseDetectionProcessor(
         return unprocessedSymbols
     }
 }
+
