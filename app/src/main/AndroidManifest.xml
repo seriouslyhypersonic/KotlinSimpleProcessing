@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:name=".app.KspForAllApplication"
+        android:name=".app.KspApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -10,11 +10,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.KspForAll">
+        android:theme="@style/Theme.Ksp">
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.KspForAll">
+            android:theme="@style/Theme.Ksp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

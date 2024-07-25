@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.seriouslyhypersonic.kspforall"
+    namespace = "com.seriouslyhypersonic.ksp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.seriouslyhypersonic.kspforall"
+        applicationId = "com.seriouslyhypersonic.ksp"
         minSdk = 33
         targetSdk = 34
         versionCode = 1
