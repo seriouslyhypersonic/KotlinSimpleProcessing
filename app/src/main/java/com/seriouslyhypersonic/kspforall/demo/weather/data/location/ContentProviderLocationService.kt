@@ -1,10 +1,9 @@
 package com.seriouslyhypersonic.kspforall.demo.weather.data.location
 
 import android.content.Context
-import com.seriouslyhypersonic.library.kotlin.content.observeValues
+import com.seriouslyhypersonic.library.content.observeValues
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import org.koin.core.annotation.Single

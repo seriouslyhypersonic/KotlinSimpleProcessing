@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.library.kotlin.ktx
+package com.seriouslyhypersonic.library.ktx
 
 import android.database.Cursor
 

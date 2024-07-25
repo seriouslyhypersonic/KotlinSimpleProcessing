@@ -7,8 +7,8 @@ import android.database.MatrixCursor
 import android.net.Uri
 import com.seriouslyhypersonic.annotations.ColumnName
 import com.seriouslyhypersonic.annotations.ContentValue
-import com.seriouslyhypersonic.library.kotlin.content.ContentProviderContract
-import com.seriouslyhypersonic.library.kotlin.ktx.get
+import com.seriouslyhypersonic.library.content.ContentProviderContract
+import com.seriouslyhypersonic.library.ktx.get
 
 @ContentValue(authorithy = "com.seriouslyhypersonic.kspforall.provider", path = "/locations")
 data class Location(

@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.library.kotlin.factory
+package com.seriouslyhypersonic.library.factory
 
 import android.os.Handler
 import android.os.HandlerThread

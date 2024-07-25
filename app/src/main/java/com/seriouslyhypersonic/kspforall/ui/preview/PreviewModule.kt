@@ -2,8 +2,8 @@ package com.seriouslyhypersonic.kspforall.ui.preview
 
 import com.seriouslyhypersonic.kspforall.demo.weather.ClearSkiesWeatherOverviewViewModel
 import com.seriouslyhypersonic.kspforall.demo.weather.WeatherOverviewViewModel
-import com.seriouslyhypersonic.library.kotlin.preview.previewModule
-import com.seriouslyhypersonic.library.kotlin.preview.with
+import com.seriouslyhypersonic.library.preview.previewModule
+import com.seriouslyhypersonic.library.preview.with
 
 class PreviewModule
 

@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.library.kotlin.preview
+package com.seriouslyhypersonic.library.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider

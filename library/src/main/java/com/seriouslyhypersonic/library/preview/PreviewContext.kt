@@ -1,7 +1,7 @@
-package com.seriouslyhypersonic.library.kotlin.preview
+package com.seriouslyhypersonic.library.preview
 
-import com.seriouslyhypersonic.library.kotlin.AnyKClass
-import com.seriouslyhypersonic.library.kotlin.AnyPreviewSpec
+import com.seriouslyhypersonic.library.AnyKClass
+import com.seriouslyhypersonic.library.AnyPreviewSpec
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.parameter.ParametersHolder
 import kotlin.reflect.KClass

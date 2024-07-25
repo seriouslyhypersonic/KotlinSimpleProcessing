@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.library.kotlin.content
+package com.seriouslyhypersonic.library.content
 
 import android.content.ContentResolver
 import android.content.ContentValues
@@ -10,8 +10,10 @@ import android.net.Uri
 public interface ContentProviderContract<V> {
     public val uri: Uri
     public val projection: Array<String>
+
     public val ContentValues.value: V
     public val Cursor.value: V
+
     public fun V.toContentValues(): ContentValues
     public fun toCursor(): MatrixCursor
     public fun toMatcher(): UriMatcher

@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.library.kotlin.content
+package com.seriouslyhypersonic.library.content
 
 import android.database.Cursor
 import androidx.annotation.WorkerThread

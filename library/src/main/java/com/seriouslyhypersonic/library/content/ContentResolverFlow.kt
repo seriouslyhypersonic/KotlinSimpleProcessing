@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.library.kotlin.content
+package com.seriouslyhypersonic.library.content
 
 import android.content.ContentProvider
 import android.content.ContentResolver
@@ -6,7 +6,7 @@ import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
 import android.os.Handler
-import com.seriouslyhypersonic.library.kotlin.factory.WorkerThreadHandler
+import com.seriouslyhypersonic.library.factory.WorkerThreadHandler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose

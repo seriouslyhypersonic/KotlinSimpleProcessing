@@ -323,7 +323,7 @@ private object InjectFunction {
     object Function {
         val DefaultExtras = ClassName(packageName = "org.koin.androidx.compose", "defaultExtras")
         val InjectViewModel = ClassName(
-            packageName = "com.seriouslyhypersonic.library.kotlin.preview",
+            packageName = "com.seriouslyhypersonic.library.preview",
             "injectViewModel"
         )
     }

@@ -3,7 +3,7 @@ package com.seriouslyhypersonic.kspforall.demo.weather.data.location
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.net.Uri
-import com.seriouslyhypersonic.library.kotlin.content.addAsRows
+import com.seriouslyhypersonic.library.content.addAsRows
 
 class LocationProvider : ContentProvider() {
     private var locations = emptyList<Location>()
