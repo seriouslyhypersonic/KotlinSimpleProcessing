@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.kspforall.demo.weather.domain
+package com.seriouslyhypersonic.kspforall.demo.weather.data
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
