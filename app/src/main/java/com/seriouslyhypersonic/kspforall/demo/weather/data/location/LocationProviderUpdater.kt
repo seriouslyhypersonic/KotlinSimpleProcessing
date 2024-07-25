@@ -1,16 +1,13 @@
 package com.seriouslyhypersonic.kspforall.demo.weather.data.location
 
 import android.content.Context
-import com.seriouslyhypersonic.library.kotlin.content.toArrayOfContentValues
+import com.seriouslyhypersonic.library.kotlin.content.bulkInsert
 import org.koin.core.annotation.Single
 
 @Single
 class LocationProviderUpdater(private val context: Context) {
     fun update() {
-        context.contentResolver.bulkInsert(
-            LocationContract.Uri,
-            LocationContract.run { Locations.toArrayOfContentValues() }
-        )
+        context.contentResolver.bulkInsert(LocationContract, values = Locations)
     }
 
     private companion object {
