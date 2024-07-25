@@ -2,7 +2,7 @@ package com.seriouslyhypersonic.kspforall.demo.weather
 
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import com.seriouslyhypersonic.kspforall.demo.weather.data.WeatherForecast
+import com.seriouslyhypersonic.kspforall.demo.weather.data.forecast.WeatherForecast
 
 data class WeatherSimulation(val gradient: Brush, val foreground: Color) {
     companion object {

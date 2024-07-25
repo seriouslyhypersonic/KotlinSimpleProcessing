@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.library.kotlin
+package com.seriouslyhypersonic.library.kotlin.preview
 
 /**
  * [DslMarker] for [PreviewSpecScope] DSL.

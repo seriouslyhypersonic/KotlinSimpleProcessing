@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.seriouslyhypersonic.annotations.Previewable
 import com.seriouslyhypersonic.kspforall.demo.weather.WeatherSimulation.Companion.simulationFor
-import com.seriouslyhypersonic.kspforall.demo.weather.data.WeatherService
+import com.seriouslyhypersonic.kspforall.demo.weather.data.forecast.WeatherService
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 

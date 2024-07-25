@@ -1,4 +1,4 @@
-package com.seriouslyhypersonic.kspforall.demo.weather.data
+package com.seriouslyhypersonic.kspforall.demo.weather.data.forecast
 
 data class WeatherForecast(
     val location: String,
