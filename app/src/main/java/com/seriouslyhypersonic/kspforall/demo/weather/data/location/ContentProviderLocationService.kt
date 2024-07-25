@@ -11,7 +11,7 @@ import org.koin.core.annotation.Single
 
 @Single
 class ContentProviderLocationService(
-    private val context: Context,
+    context: Context,
     scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : LocationService {
     override val locations = context.contentResolver
