@@ -2,9 +2,8 @@ package com.seriouslyhypersonic.annotations
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
-public annotation class ContentValue(
-    val authorithy: String,
+public annotation class ContentType(
+    val authority: String,
     val path: String,
-    val code: Int = 0,
-    val writable: Boolean = false
+    val code: Int = 0
 )

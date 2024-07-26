@@ -10,6 +10,8 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Modifier
+import com.seriouslyhypersonic.generation.Functions
+import com.seriouslyhypersonic.generation.Types
 import com.seriouslyhypersonic.annotations.Previewable
 import com.seriouslyhypersonic.processor.previewable.InjectFunction.addInjectionFunctionImports
 import com.squareup.kotlinpoet.ClassName
@@ -95,11 +97,10 @@ internal class PreviewableVisitor(
         fileName = "${declaration.simpleName.asString()}Contract"
     )
 
-    private fun propertySpecBuilderFor(property: KSPropertyDeclaration) =
-        PropertySpec.Companion.builder(
-            name = property.simpleName.asString(),
-            type = property.type.resolve().toTypeName()
-        )
+    private fun propertySpecBuilderFor(property: KSPropertyDeclaration) = PropertySpec.builder(
+        name = property.simpleName.asString(),
+        type = property.type.resolve().toTypeName()
+    )
 
     private fun contractPropertySpecsFor(properties: Sequence<KSPropertyDeclaration>) = properties
         .map { propertySpecBuilderFor(it).build() }
@@ -184,10 +185,10 @@ private object InjectFunction {
         .addKdoc(
             """
             Injects [%T] or the preview associated with it if the system is currently under preview 
-        """.trimIndent(),
+            """.trimIndent(),
             classDeclaration.toClassName()
         )
-        .addAnnotation(Annotation.Composable)
+        .addAnnotation(Types.Composable)
         .addParameter(Parameter.Qualifier)
         .addParameter(Parameter.ViewModelOwner)
         .addParameter(Parameter.Key)
@@ -199,32 +200,28 @@ private object InjectFunction {
         .build()
 
     fun FileSpec.Builder.addInjectionFunctionImports() = this
-        .addImport(Type.LocalVmStoreOwner.packageName, Type.LocalVmStoreOwner.simpleName)
-        .addImport(Function.DefaultExtras.packageName, Function.DefaultExtras.simpleName)
-        .addImport(Type.LocalKoinScope.packageName, Type.LocalKoinScope.simpleName)
-        .addImport(Function.InjectViewModel.packageName, Function.InjectViewModel.simpleName)
+        .addImport(
+            Types.LocalViewModelStoreOwner.packageName,
+            Types.LocalViewModelStoreOwner.simpleName
+        )
+        .addImport(Functions.DefaultExtras.packageName, Functions.DefaultExtras.simpleName)
+        .addImport(Types.LocalKoinScope.packageName, Types.LocalKoinScope.simpleName)
+        .addImport(Functions.InjectViewModel.packageName, Functions.InjectViewModel.simpleName)
 
     object Parameter {
         val Qualifier = ParameterSpec
-            .builder(
-                name = "qualifier",
-                type = ClassName(packageName = "org.koin.core.qualifier", "Qualifier")
-                    .copy(nullable = true),
-            )
+            .builder(name = "qualifier", type = Types.Qualifier.copy(nullable = true))
             .defaultValue("null")
             .build()
 
         val ViewModelOwner = ParameterSpec
-            .builder(
-                name = "viewModelStoreOwner",
-                type = ClassName(packageName = "androidx.lifecycle", "ViewModelStoreOwner")
-            )
+            .builder(name = "viewModelStoreOwner", type = Types.ViewModelStoreOwner)
             .defaultValue(
                 """
                 checkNotNull(LocalViewModelStoreOwner.current) {
                     "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
                 }
-            """.trimIndent()
+                """.trimIndent()
             )
             .build()
 
@@ -234,53 +231,27 @@ private object InjectFunction {
             .build()
 
         val Extras = ParameterSpec
-            .builder(
-                name = "extras",
-                type = ClassName(packageName = "androidx.lifecycle.viewmodel", "CreationExtras")
-            )
+            .builder(name = "extras", type = Types.CreationExtras)
             .defaultValue("defaultExtras(viewModelStoreOwner)")
             .build()
 
         val Scope = ParameterSpec
-            .builder(name = "scope", type = ClassName(packageName = "org.koin.core.scope", "Scope"))
+            .builder(name = "scope", type = Types.Scope)
             .defaultValue("LocalKoinScope.current")
             .build()
 
         val Parameters = ParameterSpec
-            .builder(
-                name = "parameters",
-                type = ClassName(packageName = "org.koin.core.parameter", "ParametersDefinition")
-                    .copy(nullable = true)
-            )
+            .builder(name = "parameters", type = Types.ParametersDefintion.copy(nullable = true))
             .defaultValue("null")
             .build()
     }
 
     object Type {
-        val LocalVmStoreOwner = ClassName(
-            packageName = "androidx.lifecycle.viewmodel.compose",
-            "LocalViewModelStoreOwner"
-        )
-
-        val LocalKoinScope = ClassName(packageName = "org.koin.compose", "LocalKoinScope")
-
         @Suppress("FunctionName")
         fun SomeViewModel(classDeclaration: KSClassDeclaration) = ClassName(
             packageName = classDeclaration.packageName.asString(),
             "Some${classDeclaration.simpleName.asString()}"
         )
-    }
-
-    object Function {
-        val DefaultExtras = ClassName(packageName = "org.koin.androidx.compose", "defaultExtras")
-        val InjectViewModel = ClassName(
-            packageName = "com.seriouslyhypersonic.library.preview",
-            "injectViewModel"
-        )
-    }
-
-    object Annotation {
-        val Composable = ClassName(packageName = "androidx.compose.runtime", "Composable")
     }
 
     object Implementation {
@@ -302,3 +273,4 @@ private object InjectFunction {
             .build()
     }
 }
+

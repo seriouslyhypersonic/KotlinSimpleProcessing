@@ -5,11 +5,11 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
 /**
- * [SymbolProcessorProvider] that provides a [ContentValueProcessor].
+ * [SymbolProcessorProvider] that provides a [ContentTypeProcessor].
  */
-public class ContentValueProcessorProvider : SymbolProcessorProvider {
+public class ContentTypeProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-        ContentValueProcessor(
+        ContentTypeProcessor(
             generator = environment.codeGenerator,
             logger = environment.logger,
             options = environment.options

@@ -67,7 +67,7 @@ public fun ContentResolver.observe(
 }
 
 public fun <V> ContentResolver.observeValueOrNull(
-    contract: ContentProviderContract<V>,
+    contract: ContentTypeContract<V>,
     selection: String? = null,
     selectionArgs: Array<String>? = null,
     sortOrder: String? = null,
@@ -81,7 +81,7 @@ public fun <V> ContentResolver.observeValueOrNull(
 ).mapRowOrNull(dispatcher) { contract.run { it.value } }
 
 public fun <V> ContentResolver.observeValue(
-    contract: ContentProviderContract<V>,
+    contract: ContentTypeContract<V>,
     selection: String? = null,
     selectionArgs: Array<String>? = null,
     sortOrder: String? = null,
@@ -99,7 +99,7 @@ public fun <V> ContentResolver.observeValue(
 ).filterNotNull()
 
 public fun <V> ContentResolver.observeValues(
-    contract: ContentProviderContract<V>,
+    contract: ContentTypeContract<V>,
     selection: String? = null,
     selectionArgs: Array<String>? = null,
     sortOrder: String? = null,
