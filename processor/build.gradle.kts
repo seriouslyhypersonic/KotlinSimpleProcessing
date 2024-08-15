@@ -7,13 +7,13 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.withType<KotlinCompile>().all {
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
 
         freeCompilerArgs = listOfNotNull(
             "-opt-in=kotlin.RequiresOptIn",
@@ -23,9 +23,19 @@ tasks.withType<KotlinCompile>().all {
     }
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation(project(":annotations"))
     implementation(libs.ksp.api)
     implementation(libs.kotlinpoet)
     implementation(libs.kotlinpoet.ksp)
+
+    testImplementation(kotlin("test"))
+    testImplementation(libs.kotlin.compile.testing.ksp)
+
+    testImplementation(libs.jupiter.api)
+    testRuntimeOnly(libs.jupiter.engine)
 }
