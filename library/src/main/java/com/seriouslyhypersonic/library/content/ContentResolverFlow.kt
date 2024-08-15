@@ -41,6 +41,11 @@ import kotlinx.coroutines.withContext
  * Strings.
  * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER
  * BY itself). Passing `null` will use the default sort order, which may be unordered.
+ * @param notifyForDescendants When `false`, the observer will be notified whenever a change occurs
+ * to the exact URI specified by uri or to one of the URI's ancestors in the path hierarchy. When
+ * `true`, the observer will also be notified whenever a change occurs to the URI's descendants in
+ * the path hierarchy.
+ * @param handler The [Handler] to run [ContentObserver.onChange], or `null` if none.
  */
 public fun ContentResolver.observe(
     uri: Uri,
@@ -66,6 +71,29 @@ public fun ContentResolver.observe(
     awaitClose { unregisterContentObserver(observer) }
 }
 
+/**
+ * Returns a flow that reads a single value [V] from a [ContentProvider] using te provided
+ * [contract]. If the content of the table cannot be converted to [V] (e.g. because the table is
+ * empty or its format is incompatible with the [contract]) then `null` is returns
+ *
+ * __Important__: it is an error to use this operator if the result set contains more than one row.
+ *  * Use `LIMIT 1` on the underlying SQL query to prevent this.
+ *
+ * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
+ * (excluding the WHERE itself). Passing `null` will return all rows for the given URI.
+ * @param selectionArgs You may include ?s in selection, which will be replaced by the values from
+ * selectionArgs, in the order that they appear in the selection. The values will be bound as
+ * Strings.
+ * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER
+ * BY itself). Passing `null` will use the default sort order, which may be unordered.
+ * @param notifyForDescendants When `false`, the observer will be notified whenever a change occurs
+ * to the exact URI specified by uri or to one of the URI's ancestors in the path hierarchy. When
+ * `true`, the observer will also be notified whenever a change occurs to the URI's descendants in
+ * the path hierarchy.
+ * @param handler The [Handler] to run [ContentObserver.onChange], or `null` if none.
+ * @param dispatcher The [CoroutineDispatcher] used to perform transformation of a [ContentProvider]
+ * row to the [contract] value of type [V].
+ */
 public fun <V> ContentResolver.observeValueOrNull(
     contract: ContentTypeContract<V>,
     selection: String? = null,
@@ -80,6 +108,30 @@ public fun <V> ContentResolver.observeValueOrNull(
     selection, selectionArgs, sortOrder, notifyForDescendants, handler
 ).mapRowOrNull(dispatcher) { contract.run { it.value } }
 
+/**
+ * Returns a flow that reads a single value [V] from a [ContentProvider] using te provided
+ * [contract]. If the content of the table cannot be converted to [V] (e.g. because the table is
+ * empty or its format is incompatible with the [contract]) then any calls to [ContentObserver] are
+ * ignored.
+ *
+ * __Important__: it is an error to use this operator if the result set contains more than one row.
+ *  * Use `LIMIT 1` on the underlying SQL query to prevent this.
+ *
+ * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
+ * (excluding the WHERE itself). Passing `null` will return all rows for the given URI.
+ * @param selectionArgs You may include ?s in selection, which will be replaced by the values from
+ * selectionArgs, in the order that they appear in the selection. The values will be bound as
+ * Strings.
+ * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER
+ * BY itself). Passing `null` will use the default sort order, which may be unordered.
+ * @param notifyForDescendants When `false`, the observer will be notified whenever a change occurs
+ * to the exact URI specified by uri or to one of the URI's ancestors in the path hierarchy. When
+ * `true`, the observer will also be notified whenever a change occurs to the URI's descendants in
+ * the path hierarchy.
+ * @param handler The [Handler] to run [ContentObserver.onChange], or `null` if none.
+ * @param dispatcher The [CoroutineDispatcher] used to perform transformation of a [ContentProvider]
+ * row to the [contract] value of type [V].
+ */
 public fun <V> ContentResolver.observeValue(
     contract: ContentTypeContract<V>,
     selection: String? = null,
@@ -98,6 +150,26 @@ public fun <V> ContentResolver.observeValue(
     dispatcher
 ).filterNotNull()
 
+/**
+ * Returns a flow that reads a multiple value [V] from a [ContentProvider] using te provided
+ * [contract]. Any of the rows that cannot be converted to [V] (e.g. because the table is empty or
+ * its format is incompatible with the [contract]) are ignored.
+ *
+ * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
+ * (excluding the WHERE itself). Passing `null` will return all rows for the given URI.
+ * @param selectionArgs You may include ?s in selection, which will be replaced by the values from
+ * selectionArgs, in the order that they appear in the selection. The values will be bound as
+ * Strings.
+ * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER
+ * BY itself). Passing `null` will use the default sort order, which may be unordered.
+ * @param notifyForDescendants When `false`, the observer will be notified whenever a change occurs
+ * to the exact URI specified by uri or to one of the URI's ancestors in the path hierarchy. When
+ * `true`, the observer will also be notified whenever a change occurs to the URI's descendants in
+ * the path hierarchy.
+ * @param handler The [Handler] to run [ContentObserver.onChange], or `null` if none.
+ * @param dispatcher The [CoroutineDispatcher] used to perform transformation of a [ContentProvider]
+ * row to the [contract] value of type [V].
+ */
 public fun <V> ContentResolver.observeValues(
     contract: ContentTypeContract<V>,
     selection: String? = null,
