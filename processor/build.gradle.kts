@@ -1,9 +1,9 @@
-import com.android.build.gradle.internal.utils.configureKotlinCompileTasks
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("java-library")
     alias(libs.plugins.jetbrains.kotlin.jvm)
+    alias(libs.plugins.ksp)
 }
 
 java {
@@ -32,6 +32,9 @@ dependencies {
     implementation(libs.ksp.api)
     implementation(libs.kotlinpoet)
     implementation(libs.kotlinpoet.ksp)
+
+    implementation(libs.google.auto.autoService)
+    ksp(libs.zacsweers.auto.service)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlin.compile.testing.ksp)
