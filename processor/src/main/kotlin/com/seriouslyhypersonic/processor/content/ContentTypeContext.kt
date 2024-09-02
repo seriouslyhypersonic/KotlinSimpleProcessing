@@ -7,7 +7,7 @@ import com.seriouslyhypersonic.annotations.ContentType
 /**
  * Processing context for [ContentType] annotations.
  */
-internal data class ContentValueContext(
+internal data class ContentTypeContext(
     val authority: String,
     val path: String,
     val declaration: KSClassDeclaration,

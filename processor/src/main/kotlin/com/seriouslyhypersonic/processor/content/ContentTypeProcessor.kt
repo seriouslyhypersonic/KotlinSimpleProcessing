@@ -32,17 +32,14 @@ internal class ContentTypeProcessor(
     @Suppress("unused") private val options: Map<String, String>
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver
-            .classesAnnotatedWith(ContentType::class)
-            .filter { it.validate() }
+        val symbols = resolver.classesAnnotatedWith(ContentType::class)
+        val validSymbols  = symbols.filter { it.validate() }
 
-        if (!symbols.iterator().hasNext()) return emptyList()
-
-        symbols.forEach { declaration ->
-            val annotation = declaration.getAnnotationsByType(ContentType::class).first()
+        validSymbols.forEach { declaration ->
+            val annotation: ContentType = declaration.getAnnotationsByType(ContentType::class).first()
             val finalContext = declaration.accept(
-                visitor = ContentValueVisitor(),
-                data = annotation.run { ContentValueContext(authority, path, declaration) }
+                visitor = ContentTypeVisitor(),
+                data = annotation.run { ContentTypeContext(authority, path, declaration) }
             )
 
             ContractBuilder(finalContext)
@@ -50,13 +47,12 @@ internal class ContentTypeProcessor(
                 .writeTo(generator, aggregating = true)
         }
 
-        val unprocessedSymbols = symbols.filterNot { it.validate() }.toList()
-        return unprocessedSymbols
+        return (symbols - validSymbols.toSet()).toList()
     }
 }
 
 @OptIn(KspExperimental::class)
-private class ContractBuilder(private val context: ContentValueContext) {
+private class ContractBuilder(private val context: ContentTypeContext) {
     fun build(): FileSpec = fileSpecBuilderFor(context.declaration)
         .addImport(packageName = Functions.CursorGet.packageName, Functions.CursorGet.simpleName)
         .addType(
@@ -98,7 +94,7 @@ private class ContractBuilder(private val context: ContentValueContext) {
         ).build()
     }
 
-    private fun contractComponents(context: ContentValueContext) = listOf(
+    private fun contractComponents(context: ContentTypeContext) = listOf(
         constPropertySpec(name = "AUTHORITY", value = context.authority)
             .addKdoc(
                 "The authority for the [%T] publishing [%T].",
@@ -119,7 +115,7 @@ private class ContractBuilder(private val context: ContentValueContext) {
         .initializer("Uri.parse(\"content://\$AUTHORITY/\$PATH\")")
         .build()
 
-    private fun projectionProperty(context: ContentValueContext) = PropertySpec
+    private fun projectionProperty(context: ContentTypeContext) = PropertySpec
         .builder(
             name = "projection",
             Array::class.parameterizedBy(String::class),
@@ -130,19 +126,19 @@ private class ContractBuilder(private val context: ContentValueContext) {
         )
         .build()
 
-    private fun contentValuesExtension(context: ContentValueContext) = PropertySpec
+    private fun contentValuesExtension(context: ContentTypeContext) = PropertySpec
         .builder(name = "value", type = context.declaration.toClassName(), KModifier.OVERRIDE)
         .receiver(Types.ContentValues)
         .getter(constructorFromGet(context, cast = true))
         .build()
 
-    private fun cursorExtension(context: ContentValueContext) = PropertySpec
+    private fun cursorExtension(context: ContentTypeContext) = PropertySpec
         .builder(name = "value", type = context.declaration.toClassName(), KModifier.OVERRIDE)
         .receiver(Types.Cursor)
         .getter(constructorFromGet(context, cast = false))
         .build()
 
-    private fun constructorFromGet(context: ContentValueContext, cast: Boolean) = FunSpec
+    private fun constructorFromGet(context: ContentTypeContext, cast: Boolean) = FunSpec
         .getterBuilder()
         .addCode(buildString {
             append("return ")
@@ -154,7 +150,7 @@ private class ContractBuilder(private val context: ContentValueContext) {
         .build()
 
     private fun constructorParametersFromGet(
-        context: ContentValueContext,
+        context: ContentTypeContext,
         cast: Boolean
     ) = buildString {
         appendLine()
@@ -172,7 +168,7 @@ private class ContractBuilder(private val context: ContentValueContext) {
         }
     }
 
-    private fun valueToContentValuesExtension(context: ContentValueContext) = FunSpec
+    private fun valueToContentValuesExtension(context: ContentTypeContext) = FunSpec
         .builder(name = "toContentValues")
         .addModifiers(KModifier.OVERRIDE)
         .receiver(context.declaration.toClassName())
@@ -205,7 +201,7 @@ private class ContractBuilder(private val context: ContentValueContext) {
         .addCode("return MatrixCursor(projection)")
         .build()
 
-    private fun matrixCursorExtension(context: ContentValueContext) = FunSpec
+    private fun matrixCursorExtension(context: ContentTypeContext) = FunSpec
         .builder(name = "addAsRow")
         .addModifiers(KModifier.OVERRIDE)
         .receiver(Types.MatrixCursor)

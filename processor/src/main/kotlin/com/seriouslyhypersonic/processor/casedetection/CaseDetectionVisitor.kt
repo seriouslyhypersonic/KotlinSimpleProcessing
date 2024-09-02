@@ -29,7 +29,7 @@ internal class EnumCaseDetectionVisitor(
         fileSpecBuilderFor(classDeclaration)
             .addProperties(propertySpecsFor(entries, classDeclaration))
             .build()
-            .writeTo(generator, aggregating = true)
+            .writeTo(generator, aggregating = false)
     }
 
     private fun propertySpecsFor(

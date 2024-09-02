@@ -19,13 +19,10 @@ internal class CaseDetectionProcessor(
     @Suppress("unused") private val options: Map<String, String>
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val symbols = resolver
-            .classesAnnotatedWith(CaseDetection::class)
-            .filter { it.validate() } // Filters out symbols deferred to other rounds
+        val symbols = resolver.classesAnnotatedWith(CaseDetection::class)
+        val validSymbols  = symbols.filter { it.validate() }
 
-        if (!symbols.iterator().hasNext()) return emptyList()
-
-        symbols.forEach { declaration ->
+        validSymbols.forEach { declaration ->
             when (declaration.classKind) {
                 ClassKind.ENUM_CLASS ->
                     declaration.accept(EnumCaseDetectionVisitor(generator), Unit)
@@ -37,8 +34,7 @@ internal class CaseDetectionProcessor(
             }
         }
 
-        val unprocessedSymbols = symbols.filterNot { it.validate() }.toList()
-        return unprocessedSymbols
+        return (symbols - validSymbols.toSet()).toList()
     }
 }
 

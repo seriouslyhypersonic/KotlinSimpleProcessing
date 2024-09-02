@@ -9,13 +9,13 @@ import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.validate
 import com.google.devtools.ksp.visitor.KSEmptyVisitor
 
-internal class ContentValueVisitor : KSEmptyVisitor<ContentValueContext, ContentValueContext>() {
-    override fun defaultHandler(node: KSNode, data: ContentValueContext) = data
+internal class ContentTypeVisitor : KSEmptyVisitor<ContentTypeContext, ContentTypeContext>() {
+    override fun defaultHandler(node: KSNode, data: ContentTypeContext) = data
 
     override fun visitClassDeclaration(
         classDeclaration: KSClassDeclaration,
-        data: ContentValueContext
-    ): ContentValueContext {
+        data: ContentTypeContext
+    ): ContentTypeContext {
         val name = classDeclaration.qualifiedName?.asString().orEmpty()
 
         check(classDeclaration.run { classKind == ClassKind.CLASS && Modifier.DATA in modifiers }) {
@@ -38,6 +38,6 @@ internal class ContentValueVisitor : KSEmptyVisitor<ContentValueContext, Content
 
     override fun visitPropertyDeclaration(
         property: KSPropertyDeclaration,
-        data: ContentValueContext
-    ): ContentValueContext = data.copy(properties = data.properties + property)
+        data: ContentTypeContext
+    ): ContentTypeContext = data.copy(properties = data.properties + property)
 }

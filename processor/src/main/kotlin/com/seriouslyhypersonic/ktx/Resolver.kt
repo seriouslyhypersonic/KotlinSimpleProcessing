@@ -4,9 +4,9 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import kotlin.reflect.KClass
 
-internal fun <A : Any> Resolver.symbolsAnnotatedWith(klass: KClass<A>) =
+internal fun <A : Annotation> Resolver.symbolsAnnotatedWith(klass: KClass<A>) =
     getSymbolsWithAnnotation(klass.qualifiedName.orEmpty())
 
-internal fun <A : Any> Resolver.classesAnnotatedWith(klass: KClass<A>) = this
+internal fun <A : Annotation> Resolver.classesAnnotatedWith(klass: KClass<A>) = this
     .symbolsAnnotatedWith(klass)
     .filterIsInstance<KSClassDeclaration>()
