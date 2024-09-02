@@ -1,5 +1,9 @@
 # Kotlin Simple Processing
 
+<p align="center">
+<img src="./resources/droidcon_banner.png" alt="drawing" width="750"/>
+</p>
+
 This is the companion demo app for the **Kotlin Simple Processing** session at DroidCon Lisbon
 
 You will find the KSP annotations in the `annotation` module and the KSP processors in the 
