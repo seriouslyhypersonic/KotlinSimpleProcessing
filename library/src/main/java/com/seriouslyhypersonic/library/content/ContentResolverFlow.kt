@@ -72,7 +72,7 @@ public fun ContentResolver.observe(
 }
 
 /**
- * Returns a flow that reads a single value [V] from a [ContentProvider] using te provided
+ * Returns a flow that reads a single value [V] from a [ContentProvider] using the provided
  * [contract]. If the content of the table cannot be converted to [V] (e.g. because the table is
  * empty or its format is incompatible with the [contract]) then `null` is returns
  *
@@ -109,7 +109,7 @@ public fun <V> ContentResolver.observeValueOrNull(
 ).mapRowOrNull(dispatcher) { contract.run { it.value } }
 
 /**
- * Returns a flow that reads a single value [V] from a [ContentProvider] using te provided
+ * Returns a flow that reads a single value [V] from a [ContentProvider] using the provided
  * [contract]. If the content of the table cannot be converted to [V] (e.g. because the table is
  * empty or its format is incompatible with the [contract]) then any calls to [ContentObserver] are
  * ignored.
@@ -151,7 +151,7 @@ public fun <V> ContentResolver.observeValue(
 ).filterNotNull()
 
 /**
- * Returns a flow that reads a multiple value [V] from a [ContentProvider] using te provided
+ * Returns a flow that reads a multiple value [V] from a [ContentProvider] using the provided
  * [contract]. Any of the rows that cannot be converted to [V] (e.g. because the table is empty or
  * its format is incompatible with the [contract]) are ignored.
  *

@@ -24,7 +24,7 @@ package com.seriouslyhypersonic.annotations
  * ```
  *
  * The column names of the `ContentProvider` used to populate the model class are assumed to be the
- * capitalized name of each model property. If you need to provide a costum column name  for any of
+ * capitalized name of each model property. If you need to provide a custom column name  for any of
  * the model properties, you may do so by annotating the applicable properties with [ColumnName].
  */
 @Target(AnnotationTarget.CLASS)
